@@ -1,0 +1,18 @@
+spring:
+  config:
+    import: optional:configserver:http://admin:1234@localhost:9000
+  datasource:
+    url: jdbc:h2:mem:~/ecommerce
+    driver-class-name: org.h2.Driver
+    username: ecommerce
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
