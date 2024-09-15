@@ -19,6 +19,9 @@ import com.ecommerceorder.domain.wishlist.repository.WishlistItemRepository;
 import com.ecommerceorder.domain.wishlist.repository.WishlistRepository;
 import com.ecommerceorder.global.exception.CustomException;
 import com.ecommerceorder.global.exception.ExceptionCode;
+import com.ecommerceorder.global.feign.ProductFeignClient;
+import com.ecommerceorder.global.feign.UserFeignClient;
+import com.ecommerceorder.global.feign.dto.UpdateQuantityByProductOptionsDto;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +39,8 @@ public class OrderServiceImpl implements OrderService {
   private final OrderItemRepository orderItemRepository;
   private final WishlistItemRepository wishlistItemRepository;
   private final WishlistRepository wishlistRepository;
-//  private final ApplicationEventPublisher eventPublisher;
+  private final ProductFeignClient productFeignClient;
+  private final UserFeignClient userFeignClient;
 
   @Override
   @Transactional
@@ -91,8 +95,7 @@ public class OrderServiceImpl implements OrderService {
     order.requestCancel();
     // 상품 옵션 및 상품 수량 되돌리기
     List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
-    // TODO: 상품 제고 업데이트 통신 필요
-//    eventPublisher.publishEvent(new UpdateQuantityByProductOptionsEvent(orderItems));
+    productFeignClient.updateProductStock(UpdateQuantityByProductOptionsDto.from(orderItems));
   }
 
   private void requestReturn(Order order) {
@@ -113,9 +116,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     List<OrderItem> orderItemsToSave = new ArrayList<>();
-    // TODO: 있는지 확인 필요
-//    Member member = memberRepository.findById(currentMemberId)
-//        .orElseThrow(()-> CustomException.from(ExceptionCode.USER_NOT_FOUND));
+    if(!userFeignClient.existsMemberId(currentMemberId)){
+      CustomException.from(ExceptionCode.USER_NOT_FOUND);
+    }
     Order order = orderRepository.save(new Order(totalPayment, currentMemberId, OrderStatus.CREATED));
     Set<Wishlist> wishlists = new HashSet<>();
     for(WishlistItem item : items){

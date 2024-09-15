@@ -3,6 +3,7 @@ package com.ecommerceorder.api.service.wishlist;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
+import static org.mockito.BDDMockito.given;
 
 import com.ecommerceorder.IntegrationTestSupport;
 import com.ecommerceorder.api.controller.ApiResponse;
@@ -232,42 +233,42 @@ class WishlistServiceTest extends IntegrationTestSupport {
         .hasMessage("모든 옵션의 상품이 같아야 합니다.");
   }
 
-  // TODO: 통신 후 확인 필요
-//  @DisplayName("위시리스트에 등록 시, 멤버 정보가 없는 멤버id로는 진행할 수 없다.")
-//  @Test
-//  void modifyWithUserNotFound(){
-//    // given
-//    Product product1 = productRepository.save(createProduct("상품1"));
-//    Product product2 = productRepository.save(createProduct("상품2"));
-//    Product product3 = productRepository.save(createProduct("상품3"));
-//
-//    Wishlist wishlist1 = wishlistRepository.save(createWishlist(1L, product1));
-//    Wishlist wishlist2 = wishlistRepository.save(createWishlist(1L, product2));
-//    Wishlist wishlist3 = wishlistRepository.save(createWishlist(2L, product3));
-//
-//    ProductOption option1 = productOptionRepository.save(createProductOption("옵션1-1", product1));
-//    ProductOption option2 = productOptionRepository.save(createProductOption("옵션1-2", product1));
-//    ProductOption option3 = productOptionRepository.save(createProductOption("옵션1-3", product1));
-//    ProductOption option4 = productOptionRepository.save(createProductOption("옵션2-1", product2));
-//    ProductOption option5 = productOptionRepository.save(createProductOption("옵션3-1", product3));
-//
-//    List<WishlistItem> items = new ArrayList<>();
-//    items.add(createWishlistItem(wishlist1, option1, 1)); // member1, product1, option1
-//    items.add(createWishlistItem(wishlist1, option2, 2)); // member1, product1, option2
-//    items.add(createWishlistItem(wishlist1, option3, 3)); // member1, product1, option3
-//    items.add(createWishlistItem(wishlist2, option4, 4)); // member1, product2, option4
-//    items.add(createWishlistItem(wishlist3, option5, 5)); // member2, product3, option5
-//    wishlistItemRepository.saveAll(items);
-//
-//    // when
-//    // then
-//    assertThatThrownBy(() -> wishlistService.modify(0L, List.of(
-//        new CreateWishlistRequest(option1.getId(), 3),
-//        new CreateWishlistRequest(option2.getId(), 3),
-//        new CreateWishlistRequest(option3.getId(), 3)
-//    ))).isInstanceOf(CustomException.class)
-//        .hasMessage("유저 개체를 찾지 못했습니다.");
-//  }
+  @DisplayName("위시리스트에 등록 시, 멤버 정보가 없는 멤버id로는 진행할 수 없다.")
+  @Test
+  void modifyWithUserNotFound(){
+    // given
+    Product product1 = productRepository.save(createProduct("상품1"));
+    Product product2 = productRepository.save(createProduct("상품2"));
+    Product product3 = productRepository.save(createProduct("상품3"));
+
+    Wishlist wishlist1 = wishlistRepository.save(createWishlist(1L, product1));
+    Wishlist wishlist2 = wishlistRepository.save(createWishlist(1L, product2));
+    Wishlist wishlist3 = wishlistRepository.save(createWishlist(2L, product3));
+
+    ProductOption option1 = productOptionRepository.save(createProductOption("옵션1-1", product1));
+    ProductOption option2 = productOptionRepository.save(createProductOption("옵션1-2", product1));
+    ProductOption option3 = productOptionRepository.save(createProductOption("옵션1-3", product1));
+    ProductOption option4 = productOptionRepository.save(createProductOption("옵션2-1", product2));
+    ProductOption option5 = productOptionRepository.save(createProductOption("옵션3-1", product3));
+
+    List<WishlistItem> items = new ArrayList<>();
+    items.add(createWishlistItem(wishlist1, option1, 1)); // member1, product1, option1
+    items.add(createWishlistItem(wishlist1, option2, 2)); // member1, product1, option2
+    items.add(createWishlistItem(wishlist1, option3, 3)); // member1, product1, option3
+    items.add(createWishlistItem(wishlist2, option4, 4)); // member1, product2, option4
+    items.add(createWishlistItem(wishlist3, option5, 5)); // member2, product3, option5
+    wishlistItemRepository.saveAll(items);
+
+    given(userFeignClient.existsMemberId(0L)).willReturn(false);
+    // when
+    // then
+    assertThatThrownBy(() -> wishlistService.modify(0L, List.of(
+        new CreateWishlistRequest(option1.getId(), 3),
+        new CreateWishlistRequest(option2.getId(), 3),
+        new CreateWishlistRequest(option3.getId(), 3)
+    ))).isInstanceOf(CustomException.class)
+        .hasMessage("유저 개체를 찾지 못했습니다.");
+  }
 
   @DisplayName("위시리스트를 조회한다.")
   @Test

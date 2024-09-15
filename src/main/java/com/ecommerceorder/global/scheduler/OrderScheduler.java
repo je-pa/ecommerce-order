@@ -9,11 +9,12 @@ import com.ecommerceorder.domain.order.entity.OrderItem;
 import com.ecommerceorder.domain.order.repository.OrderItemRepository;
 import com.ecommerceorder.domain.order.repository.OrderRepository;
 import com.ecommerceorder.domain.order.type.OrderStatus;
+import com.ecommerceorder.global.feign.ProductFeignClient;
+import com.ecommerceorder.global.feign.dto.UpdateQuantityByProductOptionsDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class OrderScheduler {
 
   private final OrderRepository orderRepository;
   private final OrderItemRepository orderItemRepository;
-  private final ApplicationEventPublisher eventPublisher;
+  private final ProductFeignClient productFeignClient;
 
   @Scheduled(cron = "0 0 0 * * *") // 매일 0시에 실행
   public void processOrders() {
@@ -66,7 +67,7 @@ public class OrderScheduler {
       order.setStatus(OrderStatus.RETURNED);
       log.info("Order {} has been updated to RETURNED", order.getId());
       List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
-//      eventPublisher.publishEvent(new UpdateQuantityByProductOptionsEvent(orderItems));
+      productFeignClient.updateProductStock(UpdateQuantityByProductOptionsDto.from(orderItems));
     }
     orderRepository.saveAll(ordersToReturn);
   }
