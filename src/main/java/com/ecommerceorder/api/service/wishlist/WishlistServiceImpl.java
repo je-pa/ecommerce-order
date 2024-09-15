@@ -4,10 +4,6 @@
  */
 package com.ecommerceorder.api.service.wishlist;
 
-import static com.ecommerceorder.api.controller.wishlist.dto.request.Action.DECREASE;
-import static com.ecommerceorder.api.controller.wishlist.dto.request.Action.DELETE;
-import static com.ecommerceorder.api.controller.wishlist.dto.request.Action.INCREASE;
-
 import com.ecommerceorder.api.controller.ApiResponse;
 import com.ecommerceorder.api.controller.wishlist.dto.request.CreateWishlistRequest;
 import com.ecommerceorder.api.controller.wishlist.dto.response.WishlistWithItemsResponse;
@@ -21,6 +17,7 @@ import com.ecommerceorder.domain.wishlist.repository.WishlistItemRepository;
 import com.ecommerceorder.domain.wishlist.repository.WishlistRepository;
 import com.ecommerceorder.global.exception.CustomException;
 import com.ecommerceorder.global.exception.ExceptionCode;
+import com.ecommerceorder.global.feign.UserFeignClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +32,7 @@ public class WishlistServiceImpl implements WishlistService{
   private final WishlistRepository wishlistRepository;
   private final WishlistItemRepository wishlistItemRepository;
   private final ProductOptionRepository productOptionRepository;
-
+  private final UserFeignClient userFeignClient;
 
   @Override
   @Transactional
@@ -74,9 +71,9 @@ public class WishlistServiceImpl implements WishlistService{
             memberId, productOptions.getFirst().getProduct().getId())
         .orElseGet(() -> {
           // Member 및 Product 조회
-          // TODO: 있는지 확인 필요
-//          Member member = memberRepository.findById(memberId)
-//              .orElseThrow(() -> CustomException.from(ExceptionCode.USER_NOT_FOUND));
+          if(!userFeignClient.existsMemberId(memberId)){
+            throw CustomException.from(ExceptionCode.USER_NOT_FOUND);
+          }
 
           Product product = productOptions.getFirst().getProduct();
 
