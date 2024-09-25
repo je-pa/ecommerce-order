@@ -2,7 +2,7 @@
  * @Date : 2024. 09. 06.
  * @author : jieun(je-pa)
  */
-package com.ecommerceorder.global.feign;
+package com.ecommerceorder.global.feign.user;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

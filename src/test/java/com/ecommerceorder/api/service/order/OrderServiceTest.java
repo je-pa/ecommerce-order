@@ -7,6 +7,7 @@ package com.ecommerceorder.api.service.order;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
+import static org.mockito.BDDMockito.given;
 
 import com.ecommerceorder.IntegrationTestSupport;
 import com.ecommerceorder.api.controller.ApiResponse;
@@ -87,7 +88,7 @@ class OrderServiceTest extends IntegrationTestSupport {
     WishlistItem item2  = wishlistItemRepository.save(createWishlistItem(wishlist1, option2, 2)); // member1, product1, option2
     WishlistItem item3  = wishlistItemRepository.save(createWishlistItem(wishlist2, option3, 3)); // member1, product2, option3
     wishlistItemRepository.save(createWishlistItem(wishlist2, option4, 3)); // member1, product2, option4
-
+    given(userFeignService.existsMemberId(1L)).willReturn(true);
     // when
     ApiResponse<String> result = orderService.create(new CreateOrderByWishlistItemsDto(
         List.of(

@@ -19,9 +19,9 @@ import com.ecommerceorder.domain.wishlist.repository.WishlistItemRepository;
 import com.ecommerceorder.domain.wishlist.repository.WishlistRepository;
 import com.ecommerceorder.global.exception.CustomException;
 import com.ecommerceorder.global.exception.ExceptionCode;
-import com.ecommerceorder.global.feign.ProductFeignClient;
-import com.ecommerceorder.global.feign.UserFeignClient;
-import com.ecommerceorder.global.feign.dto.UpdateQuantityByProductOptionsDto;
+import com.ecommerceorder.global.feign.product.dto.UpdateQuantityByProductOptionsDto;
+import com.ecommerceorder.global.feign.product.service.ProductFeignService;
+import com.ecommerceorder.global.feign.user.service.UserFeignService;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,8 +39,8 @@ public class OrderServiceImpl implements OrderService {
   private final OrderItemRepository orderItemRepository;
   private final WishlistItemRepository wishlistItemRepository;
   private final WishlistRepository wishlistRepository;
-  private final ProductFeignClient productFeignClient;
-  private final UserFeignClient userFeignClient;
+  private final ProductFeignService productFeignService;
+  private final UserFeignService userFeignService;
 
   @Override
   @Transactional
@@ -95,7 +95,7 @@ public class OrderServiceImpl implements OrderService {
     order.requestCancel();
     // 상품 옵션 및 상품 수량 되돌리기
     List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
-    productFeignClient.updateProductStock(UpdateQuantityByProductOptionsDto.from(orderItems));
+    productFeignService.updateProductStock(UpdateQuantityByProductOptionsDto.from(orderItems));
   }
 
   private void requestReturn(Order order) {
@@ -116,9 +116,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     List<OrderItem> orderItemsToSave = new ArrayList<>();
-    if(!userFeignClient.existsMemberId(currentMemberId)){
-      CustomException.from(ExceptionCode.USER_NOT_FOUND);
+    if(!userFeignService.existsMemberId(currentMemberId)){
+      throw CustomException.from(ExceptionCode.USER_NOT_FOUND);
     }
+
     Order order = orderRepository.save(new Order(totalPayment, currentMemberId, OrderStatus.CREATED));
     Set<Wishlist> wishlists = new HashSet<>();
     for(WishlistItem item : items){

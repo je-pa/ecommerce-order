@@ -259,7 +259,7 @@ class WishlistServiceTest extends IntegrationTestSupport {
     items.add(createWishlistItem(wishlist3, option5, 5)); // member2, product3, option5
     wishlistItemRepository.saveAll(items);
 
-    given(userFeignClient.existsMemberId(0L)).willReturn(false);
+    given(userFeignService.existsMemberId(0L)).willReturn(false);
     // when
     // then
     assertThatThrownBy(() -> wishlistService.modify(0L, List.of(
