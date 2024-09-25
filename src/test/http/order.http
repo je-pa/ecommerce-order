@@ -1,0 +1,28 @@
+###
+POST http://localhost:8083/api/v0/orders
+Content-Type: application/json
+X-Member-Id: 3
+
+[
+  {
+    "wishlistItemId": 1506
+  }
+]
+
+### 주문 생성
+POST http://localhost:8083/api/v0/orders
+X-Member-Id: 58
+Content-Type: application/json
+
+[
+  {
+    "wishlistItemId": 1511
+  }
+]
+
+###
+PATCH http://localhost:8083/api/v0/orders/1511/status
+X-Member-Id: 59
+Content-Type: application/json
+
+"CANCEL"

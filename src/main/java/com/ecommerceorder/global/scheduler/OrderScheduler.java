@@ -9,8 +9,8 @@ import com.ecommerceorder.domain.order.entity.OrderItem;
 import com.ecommerceorder.domain.order.repository.OrderItemRepository;
 import com.ecommerceorder.domain.order.repository.OrderRepository;
 import com.ecommerceorder.domain.order.type.OrderStatus;
-import com.ecommerceorder.global.feign.ProductFeignClient;
-import com.ecommerceorder.global.feign.dto.UpdateQuantityByProductOptionsDto;
+import com.ecommerceorder.global.feign.product.dto.UpdateQuantityByProductOptionsDto;
+import com.ecommerceorder.global.feign.product.service.ProductFeignService;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class OrderScheduler {
 
   private final OrderRepository orderRepository;
   private final OrderItemRepository orderItemRepository;
-  private final ProductFeignClient productFeignClient;
+  private final ProductFeignService productFeignService;
 
   @Scheduled(cron = "0 0 0 * * *") // 매일 0시에 실행
   public void processOrders() {
@@ -67,7 +67,7 @@ public class OrderScheduler {
       order.setStatus(OrderStatus.RETURNED);
       log.info("Order {} has been updated to RETURNED", order.getId());
       List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(order.getId());
-      productFeignClient.updateProductStock(UpdateQuantityByProductOptionsDto.from(orderItems));
+      productFeignService.updateProductStock(UpdateQuantityByProductOptionsDto.from(orderItems));
     }
     orderRepository.saveAll(ordersToReturn);
   }

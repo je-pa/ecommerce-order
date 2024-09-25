@@ -2,7 +2,7 @@
  * @Date : 2024. 08. 28.
  * @author : jieun(je-pa)
  */
-package com.ecommerceorder.global.feign.dto;
+package com.ecommerceorder.global.feign.product.dto;
 
 import com.ecommerceorder.domain.order.entity.OrderItem;
 import java.util.Collection;

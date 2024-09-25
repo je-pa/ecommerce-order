@@ -3,6 +3,7 @@ package com.ecommerceorder.global.exception;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,10 @@ public enum ExceptionCode {
   PRODUCT_OPTION_NOT_FOUND(NOT_FOUND, "상품 옵션 개체를 찾지 못했습니다."),
   WISHLIST_ITEM_NOT_FOUND(NOT_FOUND, "위시리스트 항목 개체를 찾지 못했습니다."),
   ORDER_NOT_FOUND(NOT_FOUND, "주문 개체를 찾지 못했습니다."),
+
+
+  USER_SERVICE_UNAVAILABLE(SERVICE_UNAVAILABLE, "유저 서비스 사용에 실패했습니다."),
+  PRODUCT_SERVICE_UNAVAILABLE(SERVICE_UNAVAILABLE, "제품 서비스 사용에 실패했습니다."),
 
   ;
   private final HttpStatus status;

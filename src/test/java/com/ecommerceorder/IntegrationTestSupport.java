@@ -1,7 +1,7 @@
 package com.ecommerceorder;
 
-import com.ecommerceorder.global.feign.ProductFeignClient;
-import com.ecommerceorder.global.feign.UserFeignClient;
+import com.ecommerceorder.global.feign.product.ProductFeignClient;
+import com.ecommerceorder.global.feign.user.service.UserFeignService;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 public abstract class IntegrationTestSupport {
 
   @MockBean
-  protected UserFeignClient userFeignClient;
+  protected UserFeignService userFeignService;
 
   @MockBean
   protected ProductFeignClient productFeignClient;

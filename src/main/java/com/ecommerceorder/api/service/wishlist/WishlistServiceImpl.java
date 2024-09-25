@@ -17,7 +17,7 @@ import com.ecommerceorder.domain.wishlist.repository.WishlistItemRepository;
 import com.ecommerceorder.domain.wishlist.repository.WishlistRepository;
 import com.ecommerceorder.global.exception.CustomException;
 import com.ecommerceorder.global.exception.ExceptionCode;
-import com.ecommerceorder.global.feign.UserFeignClient;
+import com.ecommerceorder.global.feign.user.service.UserFeignService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +32,7 @@ public class WishlistServiceImpl implements WishlistService{
   private final WishlistRepository wishlistRepository;
   private final WishlistItemRepository wishlistItemRepository;
   private final ProductOptionRepository productOptionRepository;
-  private final UserFeignClient userFeignClient;
+  private final UserFeignService userFeignService;
 
   @Override
   @Transactional
@@ -71,7 +71,7 @@ public class WishlistServiceImpl implements WishlistService{
             memberId, productOptions.getFirst().getProduct().getId())
         .orElseGet(() -> {
           // Member 및 Product 조회
-          if(!userFeignClient.existsMemberId(memberId)){
+          if(!userFeignService.existsMemberId(memberId)){
             throw CustomException.from(ExceptionCode.USER_NOT_FOUND);
           }
 
